@@ -3,7 +3,6 @@ backend:
   phases:
     build:
       commands:
-        - npm config set unsafe-perm true
         - npm ci --cache .npm --prefer-offline --legacy-peer-deps
         - cd node_modules/@parcel/watcher && npm run build && cd ../../..
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app_id $AWS_APP_ID
@@ -11,7 +10,6 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm config set unsafe-perm true
         - npm ci --legacy-peer-deps
         - cd node_modules/@parcel/watcher && npm run build && cd ../../..
     build:
