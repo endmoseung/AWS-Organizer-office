@@ -1,0 +1,3 @@
+echo "20" > .nvmrc
+git add .nvmrc
+git commit -m "chore: specify node version"
