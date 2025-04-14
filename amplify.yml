@@ -13,10 +13,17 @@ frontend:
     preBuild:
       commands:
         - nvm use 20 || nvm install 20
+        # 네이티브 모듈 사용 안 함을 알리는 환경 변수 설정
+        - export ROLLUP_SKIP_NODEJS_NATIVE=1
+        - export ESBUILD_BINARY_PATH=none
+        - export NODE_OPTIONS="--no-addons"
+        # package-lock.json 삭제 후 설치
+        - rm -f package-lock.json
+        - npm install --legacy-peer-deps --no-package-lock
     build:
       commands:
-        - npm ci --legacy-peer-deps
-        - npm run build
+        # 환경 변수를 유지한 채로 빌드 실행
+        - ROLLUP_SKIP_NODEJS_NATIVE=1 ESBUILD_BINARY_PATH=none NODE_OPTIONS="--no-addons" npm run build
   artifacts:
     baseDirectory: dist
     files:
