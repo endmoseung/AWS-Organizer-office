@@ -9,10 +9,10 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 20
-        - nvm use 20
-        - npm install --legacy-peer-deps
-        - npm rebuild @parcel/watcher
+        - export NODE_VERSION=20
+        - nvm install $NODE_VERSION
+        - nvm alias default $NODE_VERSION
+        - nvm use $NODE_VERSION
     build:
       commands:
         - npm run build
