@@ -1,36 +1,21 @@
 version: 1
 backend:
   phases:
-    preBuild:
-      commands:
-        - nvm use 20 || nvm install 20
     build:
       commands:
-        - npm ci --cache .npm --prefer-offline --legacy-peer-deps
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID || true
+        - npm ci --cache .npm --prefer-offline --legacy-peer-deps --no-optional
+        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
-    preBuild:
-      commands:
-        - nvm use 20 || nvm install 20
-        # 네이티브 모듈 관련 의존성 직접 설치
-        - npm install --legacy-peer-deps
-        - npm install @rollup/rollup-linux-x64-gnu --legacy-peer-deps --no-save || true
-        # Rollup 네이티브 모듈 무력화 - ESM 형식으로 수정
-        - 'echo "// ESM 모듈 형식" > node_modules/rollup/dist/native.js'
-        - 'echo "export function parse() { return null; }" >> node_modules/rollup/dist/native.js'
-        - 'echo "export function parseAsync() { return Promise.resolve(null); }" >> node_modules/rollup/dist/native.js'
-        - 'echo "export function getDefaultRollup() { return null; }" >> node_modules/rollup/dist/native.js'
-        - 'echo "export function getDefaultZlib() { return null; }" >> node_modules/rollup/dist/native.js'
-        # esbuild 네이티브 모듈 관련 문제 해결
-        - npm install @esbuild/linux-x64 --legacy-peer-deps --no-save || true
     build:
       commands:
-        # 실제 빌드 실행
+        - npm install --legacy-peer-deps --no-optional
         - npm run build
   artifacts:
     baseDirectory: dist
     files:
       - "**/*"
   cache:
-    paths: []
+    paths:
+      - .npm/**/*
+      - node_modules/**/*
