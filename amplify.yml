@@ -13,25 +13,28 @@ frontend:
     preBuild:
       commands:
         - nvm use 20 || nvm install 20
-        # 기본 패키지 설치
-        - npm install --legacy-peer-deps --no-package-lock
-        # Rollup 모듈 완전히 교체
+        # 네이티브 모듈 관련 의존성 직접 설치
+        - npm install --legacy-peer-deps
+        - npm install @rollup/rollup-linux-x64-gnu --legacy-peer-deps --no-save || true
+        # Rollup 네이티브 모듈 무력화
         - >
-          echo 'Object.defineProperty(exports, "__esModule", { value: true });
-          exports.getDefaultZlib = exports.getDefaultRollup = void 0;
-          function getDefaultRollup() { return false; }
-          exports.getDefaultRollup = getDefaultRollup;
-          function getDefaultZlib() { return false; }
-          exports.getDefaultZlib = getDefaultZlib;' > node_modules/rollup/dist/native.js
-        # 잘 수정되었는지 확인
-        - cat node_modules/rollup/dist/native.js
+          if [ -f "node_modules/rollup/dist/native.js" ]; then
+            # rollup의 네이티브 모듈 호출 부분을 완전히 무력화
+            cat > node_modules/rollup/dist/native.js << 'EOF'
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            function getDefaultRollup() { return null; }
+            function getDefaultZlib() { return null; }
+            exports.getDefaultRollup = getDefaultRollup;
+            exports.getDefaultZlib = getDefaultZlib;
+            EOF
+          fi
+        # esbuild 네이티브 모듈 관련 문제 해결
+        - npm install @esbuild/linux-x64 --legacy-peer-deps --no-save || true
     build:
       commands:
-        # 일반 빌드 실행
-        - npm run build || echo "Continuing despite errors..."
-        # 빌드가 실패해도 dist 폴더가 있다면 성공으로 간주
-        - ls -la dist || mkdir -p dist
-        - echo "Build completed" > dist/index.html
+        # 실제 빌드 실행
+        - npm run build
   artifacts:
     baseDirectory: dist
     files:
