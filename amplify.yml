@@ -1,18 +1,26 @@
 version: 1
 backend:
   phases:
+    preBuild:
+      commands:
+        # Node 20 버전 설정
+        - nvm use 20 || nvm install 20
     build:
       commands:
+        # esbuild 네이티브 모듈 강제 설치 후 npm 설치
         - npm install --cache .npm --prefer-offline --legacy-peer-deps
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+        - npm install @esbuild/linux-x64
+        - JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION=1 npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID || true
 frontend:
   phases:
     preBuild:
       commands:
-        - export NODE_VERSION=20
-        - nvm install $NODE_VERSION
-        - nvm alias default $NODE_VERSION
-        - nvm use $NODE_VERSION
+        # Node 20 사용하도록 설정
+        - nvm use 20 || nvm install 20
+        - node --version
+        # 종속성 설치 및 esbuild 네이티브 모듈 추가
+        - npm install --legacy-peer-deps
+        - npm install @esbuild/linux-x64
     build:
       commands:
         - npm run build
