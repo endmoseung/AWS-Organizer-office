@@ -9,7 +9,6 @@ frontend:
   phases:
     build:
       commands:
-        - npm ci --legacy-peer-deps
         - npm run build
   artifacts:
     baseDirectory: dist
