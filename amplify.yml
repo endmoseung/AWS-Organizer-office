@@ -9,7 +9,8 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci --legacy-peer-deps || true
+        - npm ci --legacy-peer-deps
+        - npm rebuild @parcel/watcher
     build:
       commands:
         - npm run build
