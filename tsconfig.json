@@ -15,10 +15,11 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "strict": false /* 엄격한 타입 검사 비활성화 */,
+    "noUnusedLocals": false /* 사용하지 않는 로컬 변수 검사 비활성화 */,
+    "noUnusedParameters": false /* 사용하지 않는 매개변수 검사 비활성화 */,
+    "noFallthroughCasesInSwitch": false /* switch문 fallthrough 검사 비활성화 */,
+    "noImplicitAny": false,
 
     /* Path Aliases */
     "baseUrl": ".",

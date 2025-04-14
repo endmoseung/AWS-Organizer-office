@@ -1,12 +1,7 @@
-import { PageLayout } from "./pages/PageLayout";
 import { Routes } from "./pages/Routes";
 
 function App() {
-  return (
-    <PageLayout>
-      <Routes />
-    </PageLayout>
-  );
+  return <Routes />;
 }
 
 export default App;
