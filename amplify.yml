@@ -10,7 +10,7 @@ frontend:
     build:
       commands:
         - npm install --legacy-peer-deps
-        - npm install @parcel/watcher
+        - npm install @parcel/watcher --legacy-peer-deps
         - npm run build
   artifacts:
     baseDirectory: dist
