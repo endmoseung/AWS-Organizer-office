@@ -9,7 +9,7 @@ frontend:
   phases:
     build:
       commands:
-        - npm install --legacy-peer-deps # 여기도 추가
+        - npm ci --legacy-peer-deps
         - npm run build
   artifacts:
     baseDirectory: dist
