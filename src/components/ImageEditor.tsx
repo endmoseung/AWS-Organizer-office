@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -19,6 +19,8 @@ import {
 import { Label } from '@/components/ui/label';
 import { Download, Check } from 'lucide-react';
 import KrugMark from './ui/KrugMark';
+import html2canvas from 'html2canvas';
+import saveAs from 'file-saver';
 
 interface ImageEditorProps {
   eventTitle: string;
@@ -68,6 +70,26 @@ export default function ImageEditor({
   const [titleColor, setTitleColor] = useState(TEXT_COLORS[0].value);
   const [speakerColor, setSpeakerColor] = useState(TEXT_COLORS[0].value);
 
+  const divRef = useRef<HTMLDivElement>(null);
+
+  // 2. 다운로드 버튼 클릭 시 실행될 함수
+  const handleDownload = async () => {
+    if (!divRef.current) return;
+
+    try {
+      const div = divRef.current;
+      const canvas = await html2canvas(div, { scale: 5 });
+
+      canvas.toBlob((blob) => {
+        if (blob !== null) {
+          saveAs(blob, 'result.png');
+        }
+      });
+    } catch (error) {
+      console.error('Error converting div to image:', error);
+    }
+  };
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('ko-KR', {
       year: 'numeric',
@@ -77,10 +99,6 @@ export default function ImageEditor({
       hour: '2-digit',
       minute: '2-digit',
     }).format(date);
-  };
-
-  const downloadImage = () => {
-    alert('이미지가 생성되어 다운로드되었습니다.');
   };
 
   const locationLabel =
@@ -100,6 +118,7 @@ export default function ImageEditor({
           <div>
             <h3 className="text-lg font-semibold mb-4">미리보기</h3>
             <div
+              ref={divRef}
               className="aspect-video rounded-sm overflow-hidden relative mb-4"
               style={{ backgroundColor: bgColor }}>
               <div className="inset-0 p-5 flex flex-col justify-between h-full">
@@ -118,15 +137,15 @@ export default function ImageEditor({
                     className="flex flex-col gap-1"
                     style={{ color: speakerColor }}>
                     <time className="text-xs">{formatDate(eventDate)}</time>
-                    <div className="text-xs w-48 md:w-96">{locationLabel}</div>
+                    <div className="text-xs w-48 md:w-52">{locationLabel}</div>
                   </div>
                 </div>
 
                 <KrugMark />
-                <div className="absolute w-32 h-32 md:w-56 md:h-56 right-3 md:right-10 bottom-6 overflow-hidden rounded-full ">
+                <div className="absolute w-32 h-32 md:w-32 md:h-32 right-3 md:right-6 bottom-6 overflow-hidden rounded-full ">
                   <img
-                    width={300}
-                    height={300}
+                    width={150}
+                    height={150}
                     src="/test.jpeg"
                     alt="AWSKRUG Logo"
                     className="object-cover w-full h-full rounded-full"
@@ -136,7 +155,15 @@ export default function ImageEditor({
             </div>
 
             <Button
-              onClick={downloadImage}
+              onClick={() => {
+                if (divRef.current) {
+                  divRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                  handleDownload();
+                }
+              }}
               className="w-full flex items-center justify-center gap-2">
               <Download size={18} />
               이미지 다운로드
@@ -261,7 +288,7 @@ export default function ImageEditor({
           onClick={onClose}>
           취소
         </Button>
-        <Button onClick={downloadImage}>저장 및 다운로드</Button>
+        <Button onClick={handleDownload}>저장 및 다운로드</Button>
       </CardFooter>
     </Card>
   );
