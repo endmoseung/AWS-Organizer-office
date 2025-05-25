@@ -78,13 +78,17 @@ export default function ImageEditor({
 
     try {
       const div = divRef.current;
-      const canvas = await html2canvas(div, { scale: 5 });
-
-      canvas.toBlob((blob) => {
-        if (blob !== null) {
-          saveAs(blob, 'result.png');
-        }
+      const canvas = await html2canvas(div, {
+        scale: 2,
+        allowTaint: true,
+      }).then((canvas) => {
+        canvas.toBlob((blob) => {
+          if (blob !== null) {
+            saveAs(blob, 'result.png');
+          }
+        });
       });
+      return canvas;
     } catch (error) {
       console.error('Error converting div to image:', error);
     }

@@ -3,6 +3,22 @@
 /* Font settings */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
+@font-face {
+  font-family: 'AmazonEmber-Heavy'; /* SVG에서 사용하는 이름과 일치 */
+  src: url('/fonts/AmazonEmber-Heavy.woff2') format('woff2'),
+    /* 실제 폰트 파일 경로 */ url('/fonts/AmazonEmber-Heavy.woff')
+      format('woff');
+  font-weight: 800; /* SVG의 font-weight와 일치시키거나 normal 등 */
+  font-style: normal;
+}
+
+/* 또는 'Amazon Ember' 폰트일 경우 */
+@font-face {
+  font-family: 'Amazon Ember'; /* SVG에서 사용하는 이름과 일치 */
+  src: url('/fonts/AmazonEmber-Regular.woff2') format('woff2'); /* 예시 경로 및 파일명 */
+  /* 해당 폰트의 다른 두께(Heavy)가 있다면 별도로 정의하거나, 
+     SVG에서 font-weight: 800 스타일에 맞는 폰트 파일이 로드되도록 해야 합니다. */
+}
 #root {
   width: 100%;
   margin: 0;
