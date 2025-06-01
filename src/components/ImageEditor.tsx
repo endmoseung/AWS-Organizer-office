@@ -159,7 +159,7 @@ export default function ImageEditor({
               </div>
             </div>
 
-            <Button
+            {/* <Button
               onClick={() => {
                 if (divRef.current) {
                   divRef.current.scrollIntoView({
@@ -170,9 +170,9 @@ export default function ImageEditor({
                 }
               }}
               className="w-full flex items-center justify-center gap-2">
-              <Download size={18} />
+             
               이미지 다운로드
-            </Button>
+            </Button> */}
           </div>
 
           <div className="space-y-6">
@@ -340,11 +340,17 @@ export default function ImageEditor({
 
       <CardFooter className="flex justify-end border-t p-4 gap-2">
         <Button
+          type="button"
           variant="outline"
           onClick={onClose}>
           취소
         </Button>
-        <Button onClick={handleDownload}>저장 및 다운로드</Button>
+        <Button
+          type="button"
+          onClick={handleDownload}>
+          <Download size={18} />
+          저장 및 다운로드
+        </Button>
       </CardFooter>
     </Card>
   );
