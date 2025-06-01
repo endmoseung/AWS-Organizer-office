@@ -319,7 +319,7 @@ export default function ImageEditor({
                   </button>
                 </div>
 
-                <div className="text-xs text-muted-foreground mt-2">
+                <div className="text-xs text-muted-foreground">
                   [그 외 색상 선택]
                 </div>
                 <input
