@@ -21,6 +21,7 @@ import { Download, Check } from 'lucide-react';
 import KrugMark from './ui/KrugMark';
 import html2canvas from 'html2canvas';
 import saveAs from 'file-saver';
+import Profile from './ui/profile';
 
 interface ImageEditorProps {
   eventTitle: string;
@@ -67,8 +68,13 @@ export default function ImageEditor({
   const [speaker, setSpeaker] = useState(speakerName);
   const [location, setLocation] = useState(LOCATIONS[0].value);
   const [bgColor, setBgColor] = useState(BACKGROUND_COLORS[0].value);
-  const [titleColor, setTitleColor] = useState(TEXT_COLORS[0].value);
+  const [titleColor, setTitleColor] = useState(TEXT_COLORS[0].value); // 제목 색상 상태
+  const [pickerColor, setPickerColor] = useState(TEXT_COLORS[0].value); // 컬러 피커 상태
+
   const [speakerColor, setSpeakerColor] = useState(TEXT_COLORS[0].value);
+  const [speakerColorPicker, setSpeakerColorPicker] = useState(
+    TEXT_COLORS[0].value
+  );
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +87,7 @@ export default function ImageEditor({
       const canvas = await html2canvas(div, {
         scale: 2,
         allowTaint: true,
+        useCORS: true,
       }).then((canvas) => {
         canvas.toBlob((blob) => {
           if (blob !== null) {
@@ -144,17 +151,11 @@ export default function ImageEditor({
                     <div className="text-xs w-48 md:w-52">{locationLabel}</div>
                   </div>
                 </div>
-
                 <KrugMark />
-                <div className="absolute w-32 h-32 md:w-32 md:h-32 right-3 md:right-6 bottom-6 overflow-hidden rounded-full ">
-                  <img
-                    width={150}
-                    height={150}
-                    src="/test.jpeg"
-                    alt="AWSKRUG Logo"
-                    className="object-cover w-full h-full rounded-full"
-                  />
-                </div>
+                <Profile
+                  src="https://avatars.githubusercontent.com/u/102910?v=4"
+                  className="w-32 h-32 rounded-full absolute bottom-4 right-4 md:bottom-6 md:right-6"
+                />
               </div>
             </div>
 
@@ -175,7 +176,7 @@ export default function ImageEditor({
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold mb-4">편집</h3>
+            <h3 className="text-lg font-semibold mb-4">편집하기</h3>
 
             <div className="space-y-4">
               <div className="grid gap-2">
@@ -233,53 +234,104 @@ export default function ImageEditor({
               </div>
 
               <div className="grid gap-2">
-                <Label>제목 색상</Label>
-                <div className="flex flex-wrap gap-2">
-                  {TEXT_COLORS.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setTitleColor(color.value)}
-                      className="w-8 h-8 rounded-full flex items-center justify-center border"
-                      style={{ backgroundColor: color.value }}
-                      title={color.label}>
-                      {titleColor === color.value && (
-                        <Check
-                          size={14}
-                          className={`${
-                            color.value === '#FFFFFF'
-                              ? 'text-black'
-                              : 'text-white'
-                          } drop-shadow-lg`}
-                        />
-                      )}
-                    </button>
-                  ))}
+                <Label>제목 색상 선택하기</Label>
+                <p className="text-xs text-aws-orange">
+                  빠른 선택 버튼 외에 다양한 색상을 선택 할 수 있습니다.
+                </p>
+
+                <div className="text-xs text-muted-foreground">
+                  [빠른 색상 선택]
                 </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setTitleColor('#212121')} // 퀵 버튼 클릭 시 제목 색상만 변경
+                    className="w-6 h-6 rounded-full flex items-center justify-center border"
+                    style={{ backgroundColor: '#212121' }}
+                    title="Black">
+                    {titleColor === '#212121' && (
+                      <Check
+                        size={12}
+                        className="text-white drop-shadow-lg"
+                      />
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setTitleColor('#FFFFFF')} // 퀵 버튼 클릭 시 제목 색상만 변경
+                    className="w-6 h-6 rounded-full flex items-center justify-center border"
+                    style={{ backgroundColor: '#FFFFFF' }}
+                    title="White">
+                    {titleColor === '#FFFFFF' && (
+                      <Check
+                        size={12}
+                        className="text-black drop-shadow-lg"
+                      />
+                    )}
+                  </button>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  [그 외 색상 선택]
+                </div>
+                <input
+                  type="color"
+                  value={pickerColor}
+                  onChange={(e) => {
+                    setPickerColor(e.target.value);
+                    setTitleColor(e.target.value);
+                  }}
+                  className="w-16 h-10 p-0 rounded"
+                  title="Custom Color Picker"
+                />
               </div>
 
               <div className="grid gap-2">
                 <Label>텍스트 색상</Label>
-                <div className="flex flex-wrap gap-2">
-                  {TEXT_COLORS.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setSpeakerColor(color.value)}
-                      className="w-8 h-8 rounded-full flex items-center justify-center border"
-                      style={{ backgroundColor: color.value }}
-                      title={color.label}>
-                      {speakerColor === color.value && (
-                        <Check
-                          size={14}
-                          className={`${
-                            color.value === '#FFFFFF'
-                              ? 'text-black'
-                              : 'text-white'
-                          } drop-shadow-lg`}
-                        />
-                      )}
-                    </button>
-                  ))}
+                <div className="text-xs text-muted-foreground">
+                  [빠른 색상 선택]
                 </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSpeakerColor('#FFFFFF')}
+                    className="w-6 h-6 rounded-full flex items-center justify-center border"
+                    style={{ backgroundColor: '#FFFFFF' }}
+                    title="White">
+                    {speakerColor === '#FFFFFF' && (
+                      <Check
+                        size={14}
+                        className="text-black drop-shadow-lg"
+                      />
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSpeakerColor('#212121')} // 퀵 버튼 클릭 시 텍스트 색상만 변경
+                    className="w-6 h-6 rounded-full flex items-center justify-center border"
+                    style={{ backgroundColor: '#212121' }}
+                    title="Black">
+                    {speakerColor === '#212121' && (
+                      <Check
+                        size={14}
+                        className="text-white drop-shadow-lg"
+                      />
+                    )}
+                  </button>
+                </div>
+
+                <div className="text-xs text-muted-foreground mt-2">
+                  [그 외 색상 선택]
+                </div>
+                <input
+                  type="color"
+                  value={speakerColorPicker}
+                  onChange={(e) => {
+                    setSpeakerColorPicker(e.target.value);
+                    setSpeakerColor(e.target.value);
+                  }}
+                  className="w-16 h-10 p-0 rounded"
+                  title="Custom Color Picker"
+                />
               </div>
             </div>
           </div>
