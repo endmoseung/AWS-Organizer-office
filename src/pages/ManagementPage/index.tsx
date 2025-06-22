@@ -9,7 +9,7 @@ export function ManagementPage() {
           Review and manage presentation submissions using the calendar view.
         </p>
       </header>
-      
+
       <Calendar />
     </div>
   );
