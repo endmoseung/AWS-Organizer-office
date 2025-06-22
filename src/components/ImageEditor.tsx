@@ -189,8 +189,8 @@ export default function ImageEditor({
                   id="title"
                   type="text"
                   className="p-2 w-full rounded-md border border-input bg-background"
-                  value={editorState.title}
-                  onChange={(e) => handleChange("title", e.target.value)}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
 

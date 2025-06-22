@@ -1,4 +1,4 @@
-import { ImageEditor } from "../../components/ImageEditor";
+import ImageEditor from "../../components/ImageEditor";
 
 export function ImageEditorPage() {
   return (
@@ -10,7 +10,12 @@ export function ImageEditorPage() {
         </p>
       </header>
 
-      <ImageEditor />
+      <ImageEditor
+        eventTitle="AWS 밋업: 클라우드 네이티브 애플리케이션 개발"
+        speakerName="홍길동"
+        eventDate={new Date()}
+        onClose={() => {}}
+      />
     </div>
   );
 }
