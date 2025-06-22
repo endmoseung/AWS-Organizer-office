@@ -14,6 +14,8 @@ import { SelectSingleEventHandler } from "react-day-picker";
 type DatePickerProps = {
   value: Date;
   onChange: SelectSingleEventHandler;
+  minDate?: Date;
+  maxDate?: Date;
 };
 
 export function DatePicker({ value, onChange }: DatePickerProps) {
@@ -27,11 +29,11 @@ export function DatePicker({ value, onChange }: DatePickerProps) {
             !value && "text-muted-foreground"
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, "PPP") : <span>Pick a date</span>}
+          <CalendarIcon className="mr-2 w-4 h-4" />
+          {value ? format(value, "PPP") : <span>날짜를 선택해 주세요</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="p-0 w-auto">
         <Calendar
           mode="single"
           selected={value}
