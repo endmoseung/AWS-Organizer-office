@@ -1,30 +1,15 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { PresentationForm } from "../../components/PresentationForm";
 import { Toaster } from "react-hot-toast";
+import { PresentationForm } from "../../components/PresentationForm";
 
 export function PresentFormPage() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const uuid = queryParams.get("uuid");
-
-  // For demonstration, log the UUID if present
-  useEffect(() => {
-    if (uuid) {
-      console.log("Form loaded with UUID:", uuid);
-    }
-  }, [uuid]);
-
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl">
       <Toaster position="top-right" />
 
       <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
-          Presentation Submission Form
-        </h1>
+        <h1 className="mb-2 text-3xl font-bold">발표 제출 양식</h1>
         <p className="text-muted-foreground">
-          Please fill out the form below to submit your presentation proposal.
+          발표 제안서를 제출하려면 아래 양식을 작성해 주세요.
         </p>
       </header>
 

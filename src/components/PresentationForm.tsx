@@ -1,185 +1,176 @@
+import { addDays } from "date-fns";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import ErrorMessage from "./ErrorMessage";
 import { Button } from "./ui/button";
 import { DatePicker } from "./ui/DatePicker";
-import toast from "react-hot-toast";
-import { addDays, format } from "date-fns";
+import { usePresentationMutation, type PresentationFormData } from "../queries/usePresentationMutation";
 
-interface PresentationFormData {
-  name: string;
-  position: string;
-  phone: string;
-  presentationType: "lightning" | "main";
-  keywords: string[];
-  title: string;
-  description: string;
-  choice1: Date | null;
-  choice2: Date | null;
-  choice3: Date | null;
-  image: FileList;
-  agreeToTerms: boolean;
-}
-
-// Available keywords for the form
+// 폼에서 사용 가능한 키워드
 const availableKeywords = [
-  "AWS", "Cloud Computing", "DevOps", "Serverless", 
-  "Frontend", "Backend", "Mobile", "Machine Learning",
-  "Big Data", "Security", "IoT", "Blockchain"
+  "AWS",
+  "클라우드 컴퓨팅",
+  "DevOps",
+  "프론트엔드",
+  "백엔드",
+  "모바일",
 ];
 
 export function PresentationForm() {
-  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<PresentationFormData>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm<PresentationFormData>();
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   
+  // TanStack Query mutation 사용
+  const presentationMutation = usePresentationMutation();
+
   const today = new Date();
   const twoWeeksFromNow = addDays(today, 14);
   const twoMonthsFromNow = addDays(today, 60);
-  
+
   const watchChoice1 = watch("choice1");
   const watchChoice2 = watch("choice2");
   const watchChoice3 = watch("choice3");
-  
+
   const onSubmit = async (data: PresentationFormData) => {
-    setIsSubmitting(true);
-    
-    try {
-      // Here you would typically make an API call to submit the form
-      console.log("Form submitted:", data);
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Show success message
-      toast.success("Form submitted successfully!");
-      
-      // Reset form
-      reset();
-      setSelectedKeywords([]);
-      
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("Failed to submit form. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    // 키워드 데이터 업데이트
+    const formDataWithKeywords = {
+      ...data,
+      keywords: selectedKeywords,
+    };
+
+    presentationMutation.mutate(formDataWithKeywords, {
+      onSuccess: () => {
+        // 폼 초기화
+        reset();
+        setSelectedKeywords([]);
+      },
+    });
   };
 
   const handleKeywordChange = (keyword: string) => {
-    setSelectedKeywords(prev => {
-      // If already selected, remove it
+    setSelectedKeywords((prev) => {
+      // 이미 선택된 경우 제거
       if (prev.includes(keyword)) {
-        return prev.filter(k => k !== keyword);
+        return prev.filter((k) => k !== keyword);
       }
-      
-      // If trying to add more than 3, prevent it
+
+      // 3개 이상 추가하려고 하면 방지
       if (prev.length >= 3) {
-        toast.error("You can select maximum 3 keywords");
         return prev;
       }
-      
-      // Add the new keyword
+
+      // 새 키워드 추가
       return [...prev, keyword];
     });
-    
-    // Update the form value
+
+    // 폼 값 업데이트
     setValue("keywords", selectedKeywords);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-2xl mx-auto">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mx-auto space-y-8 max-w-2xl"
+    >
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold border-b pb-2">Basic Information</h2>
-        
+        <h2 className="pb-2 text-xl font-semibold border-b">기본 정보</h2>
+
         <div className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1">
-              Name <span className="text-destructive">*</span>
+            <label htmlFor="name" className="block mb-1 text-sm font-medium">
+              이름 <span className="text-destructive">*</span>
             </label>
             <input
               id="name"
-              placeholder="Enter your name"
-              className="w-full p-2 rounded-md border border-input bg-background"
-              {...register("name", { required: "Name is required" })}
+              placeholder="이름을 입력하세요"
+              className="p-2 w-full rounded-md border border-input bg-background"
+              {...register("name", { required: "이름은 필수입니다" })}
             />
-            {errors.name && (
-              <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
-            )}
+            <ErrorMessage error={errors.name?.message} />
           </div>
-          
+
           <div>
-            <label htmlFor="position" className="block text-sm font-medium mb-1">
-              Position <span className="text-destructive">*</span>
+            <label
+              htmlFor="position"
+              className="block mb-1 text-sm font-medium"
+            >
+              직책 <span className="text-destructive">*</span>
             </label>
             <input
               id="position"
-              placeholder="Enter your position"
-              className="w-full p-2 rounded-md border border-input bg-background"
-              {...register("position", { required: "Position is required" })}
+              placeholder="직책을 입력하세요"
+              className="p-2 w-full rounded-md border border-input bg-background"
+              {...register("position", { required: "직책은 필수입니다" })}
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              Your position (student, freelancer, job seeker, etc.)
+            <p className="mt-1 text-xs text-muted-foreground">
+              귀하의 직책 (학생, 프리랜서, 구직자 등)
             </p>
-            {errors.position && (
-              <p className="text-destructive text-sm mt-1">{errors.position.message}</p>
-            )}
+            <ErrorMessage error={errors.position?.message} />
           </div>
-          
+
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium mb-1">
-              Phone Number <span className="text-destructive">*</span>
+            <label htmlFor="phone" className="block mb-1 text-sm font-medium">
+              전화번호 <span className="text-destructive">*</span>
             </label>
             <input
               id="phone"
               type="tel"
-              placeholder="Enter your phone number"
-              className="w-full p-2 rounded-md border border-input bg-background"
-              {...register("phone", { 
-                required: "Phone number is required",
+              placeholder="전화번호를 입력하세요"
+              className="p-2 w-full rounded-md border border-input bg-background"
+              {...register("phone", {
+                required: "전화번호는 필수입니다",
                 pattern: {
                   value: /^\d{3}-\d{3,4}-\d{4}$/,
-                  message: "Phone format: 010-1234-5678"
-                }
+                  message: "전화번호 형식: 010-1234-5678",
+                },
               })}
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              We'll contact you to coordinate schedules.
+            <p className="mt-1 text-xs text-muted-foreground">
+              일정 조율을 위해 연락드리겠습니다.
             </p>
-            {errors.phone && (
-              <p className="text-destructive text-sm mt-1">{errors.phone.message}</p>
-            )}
+            <ErrorMessage error={errors.phone?.message} />
           </div>
         </div>
       </div>
-      
+
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold border-b pb-2">Presentation Information</h2>
-        
+        <h2 className="pb-2 text-xl font-semibold border-b">발표 정보</h2>
+
         <div className="space-y-4">
           <div>
-            <label htmlFor="presentationType" className="block text-sm font-medium mb-1">
-              Presentation Type <span className="text-destructive">*</span>
+            <label
+              htmlFor="presentationType"
+              className="block mb-1 text-sm font-medium"
+            >
+              발표 유형 <span className="text-destructive">*</span>
             </label>
             <select
               id="presentationType"
-              className="w-full p-2 rounded-md border border-input bg-background"
-              {...register("presentationType", { required: "Presentation type is required" })}
+              className="p-2 w-full rounded-md border border-input bg-background"
+              {...register("presentationType", {
+                required: "발표 유형은 필수입니다",
+              })}
             >
-              <option value="">Select presentation type</option>
-              <option value="lightning">Lightning Talk</option>
-              <option value="main">Main Presentation</option>
+              <option value="">발표 유형을 선택하세요</option>
+              <option value="lightning">라이트닝 토크</option>
+              <option value="main">메인 발표</option>
             </select>
-            {errors.presentationType && (
-              <p className="text-destructive text-sm mt-1">{errors.presentationType.message}</p>
-            )}
+            <ErrorMessage error={errors.presentationType?.message} />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Keywords <span className="text-destructive">*</span> (Select up to 3)
+            <label className="block mb-1 text-sm font-medium">
+              키워드 <span className="text-destructive">*</span> (최대 3개 선택)
             </label>
             <div className="flex flex-wrap gap-2 mt-2">
-              {availableKeywords.map(keyword => (
+              {availableKeywords.map((keyword) => (
                 <button
                   key={keyword}
                   type="button"
@@ -194,144 +185,132 @@ export function PresentationForm() {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Select topics closest to your presentation (max 3)
+            <p className="mt-1 text-xs text-muted-foreground">
+              발표와 가장 가까운 주제를 선택하세요 (최대 3개)
             </p>
-            {errors.keywords && (
-              <p className="text-destructive text-sm mt-1">{errors.keywords.message}</p>
-            )}
+            <ErrorMessage error={errors.keywords?.message} />
           </div>
-          
+
           <div>
-            <label htmlFor="title" className="block text-sm font-medium mb-1">
-              Title <span className="text-destructive">*</span>
+            <label htmlFor="title" className="block mb-1 text-sm font-medium">
+              제목 <span className="text-destructive">*</span>
             </label>
             <input
               id="title"
-              placeholder="Enter presentation title"
-              className="w-full p-2 rounded-md border border-input bg-background"
-              {...register("title", { required: "Title is required" })}
+              placeholder="발표 제목을 입력하세요"
+              className="p-2 w-full rounded-md border border-input bg-background"
+              {...register("title", { required: "제목은 필수입니다" })}
             />
-            {errors.title && (
-              <p className="text-destructive text-sm mt-1">{errors.title.message}</p>
-            )}
+            <ErrorMessage error={errors.title?.message} />
           </div>
-          
+
           <div>
-            <label htmlFor="description" className="block text-sm font-medium mb-1">
-              Description <span className="text-destructive">*</span>
+            <label
+              htmlFor="description"
+              className="block mb-1 text-sm font-medium"
+            >
+              설명 <span className="text-destructive">*</span>
             </label>
             <textarea
               id="description"
-              placeholder="Describe your presentation in detail"
-              className="w-full p-2 rounded-md border border-input bg-background min-h-32"
-              {...register("description", { 
-                required: "Description is required",
+              placeholder="발표 내용을 자세히 설명해 주세요"
+              className="p-2 w-full rounded-md border border-input bg-background min-h-32"
+              {...register("description", {
+                required: "설명은 필수입니다",
                 minLength: {
                   value: 20,
-                  message: "Description must be at least 20 characters"
-                }
+                  message: "설명은 최소 20자 이상이어야 합니다",
+                },
               })}
             />
-            {errors.description && (
-              <p className="text-destructive text-sm mt-1">{errors.description.message}</p>
-            )}
+            <ErrorMessage error={errors.description?.message} />
           </div>
-          
+
           <div className="space-y-4">
             <label className="block text-sm font-medium">
-              Preferred Dates <span className="text-destructive">*</span>
+              선호 날짜 <span className="text-destructive">*</span>
             </label>
             <p className="text-xs text-muted-foreground">
-              Please select three preferred dates for your presentation. We'll try to accommodate your preferences.
+              발표를 위한 3개의 선호 날짜를 선택해 주세요. 가능한 한 귀하의
+              선호도에 맞춰 조정하겠습니다.
             </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <p className="text-sm font-medium mb-1">First Choice</p>
+                <p className="mb-1 text-sm font-medium">첫 번째 선택</p>
                 <DatePicker
-                  selected={watchChoice1}
-                  onSelect={(date) => setValue("choice1", date)}
-                  fromDate={twoWeeksFromNow}
-                  toDate={twoMonthsFromNow}
+                  value={watchChoice1}
+                  onChange={(date) => setValue("choice1", date)}
+                  minDate={twoWeeksFromNow}
+                  maxDate={twoMonthsFromNow}
                 />
-                {errors.choice1 && (
-                  <p className="text-destructive text-sm mt-1">{errors.choice1.message}</p>
-                )}
+                <ErrorMessage error={errors.choice1?.message} />
               </div>
-              
+
               <div>
-                <p className="text-sm font-medium mb-1">Second Choice</p>
+                <p className="mb-1 text-sm font-medium">두 번째 선택</p>
                 <DatePicker
-                  selected={watchChoice2}
-                  onSelect={(date) => setValue("choice2", date)}
-                  fromDate={twoWeeksFromNow}
-                  toDate={twoMonthsFromNow}
+                  value={watchChoice2}
+                  onChange={(date) => setValue("choice2", date)}
+                  minDate={twoWeeksFromNow}
+                  maxDate={twoMonthsFromNow}
                 />
-                {errors.choice2 && (
-                  <p className="text-destructive text-sm mt-1">{errors.choice2.message}</p>
-                )}
+                <ErrorMessage error={errors.choice2?.message} />
               </div>
-              
+
               <div>
-                <p className="text-sm font-medium mb-1">Third Choice</p>
+                <p className="mb-1 text-sm font-medium">세 번째 선택</p>
                 <DatePicker
-                  selected={watchChoice3}
-                  onSelect={(date) => setValue("choice3", date)}
-                  fromDate={twoWeeksFromNow}
-                  toDate={twoMonthsFromNow}
+                  value={watchChoice3}
+                  onChange={(date) => setValue("choice3", date)}
+                  minDate={twoWeeksFromNow}
+                  maxDate={twoMonthsFromNow}
                 />
-                {errors.choice3 && (
-                  <p className="text-destructive text-sm mt-1">{errors.choice3.message}</p>
-                )}
+                <ErrorMessage error={errors.choice3?.message} />
               </div>
             </div>
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Cover Image <span className="text-destructive">*</span>
+            <label className="block mb-1 text-sm font-medium">
+              커버 이미지 <span className="text-destructive">*</span>
             </label>
             <input
               type="file"
-              className="w-full p-2 rounded-md border border-input bg-background"
+              className="p-2 w-full rounded-md border border-input bg-background"
               accept=".jpg,.jpeg,.png"
-              {...register("image", { required: "Cover image is required" })}
+              {...register("image", { required: "커버 이미지는 필수입니다" })}
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              Upload an image that best represents you (max 5MB)
+            <p className="mt-1 text-xs text-muted-foreground">
+              귀하를 가장 잘 나타내는 이미지를 업로드하세요 (최대 5MB)
             </p>
-            {errors.image && (
-              <p className="text-destructive text-sm mt-1">{errors.image.message}</p>
-            )}
+            <ErrorMessage error={errors.image?.message} />
           </div>
-          
+
           <div className="flex items-start space-x-2">
             <input
               id="agreeToTerms"
               type="checkbox"
               className="mt-1"
-              {...register("agreeToTerms", { 
-                required: "You must agree to the terms" 
+              {...register("agreeToTerms", {
+                required: "약관에 동의해야 합니다",
               })}
             />
             <label htmlFor="agreeToTerms" className="text-sm">
-              I agree to the processing of my personal information for the purpose of coordinating this presentation.
+              이 발표 조율을 목적으로 개인정보 처리에 동의합니다.
             </label>
           </div>
-          {errors.agreeToTerms && (
-            <p className="text-destructive text-sm">{errors.agreeToTerms.message}</p>
-          )}
+          <ErrorMessage error={errors.agreeToTerms?.message} />
         </div>
       </div>
-      
-      <Button 
-        type="submit" 
-        className="w-full" 
+
+      <Button
+        type="submit"
+        className="w-full"
         size="lg"
-        disabled={isSubmitting}
+        disabled={presentationMutation.isPending}
       >
-        {isSubmitting ? "Submitting..." : "Submit Presentation"}
+        {presentationMutation.isPending ? "제출 중..." : "발표 제출하기"}
       </Button>
     </form>
   );
