@@ -6,6 +6,9 @@
   "engines": {
     "node": ">=18"
   },
+  "overrides": {
+    "@aws-sdk/types": "^3.734.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
