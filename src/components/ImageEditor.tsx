@@ -1,27 +1,27 @@
-import React, { useRef, useState } from 'react';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
   CardDescription,
   CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Download, Check } from 'lucide-react';
-import KrugMark from './ui/KrugMark';
-import html2canvas from 'html2canvas';
-import saveAs from 'file-saver';
-import Profile from './ui/profile';
+} from "@/components/ui/select";
+import saveAs from "file-saver";
+import html2canvas from "html2canvas";
+import { Check, Download } from "lucide-react";
+import { useRef, useState } from "react";
+import KrugMark from "./ui/KrugMark";
+import Profile from "./ui/profile";
 
 interface ImageEditorProps {
   eventTitle: string;
@@ -33,34 +33,34 @@ interface ImageEditorProps {
 // Sample locations
 const LOCATIONS = [
   {
-    value: 'carrot',
+    value: "carrot",
     address:
-      '서울특별시 서초구 강남대로 465 (교보타워) B동 11층 당근마켓 라운지',
+      "서울특별시 서초구 강남대로 465 (교보타워) B동 11층 당근마켓 라운지",
   },
-  { value: 'musinsa', address: '무신사 성수' },
+  { value: "musinsa", address: "무신사 성수" },
 ];
 
 // Sample color palettes
 const BACKGROUND_COLORS = [
-  { value: '#232F3E', label: 'AWS Blue' },
-  { value: '#FF9900', label: 'AWS Orange' },
-  { value: '#1D8102', label: 'AWS Green' },
-  { value: '#D13212', label: 'AWS Red' },
-  { value: '#0073BB', label: 'AWS Light Blue' },
-  { value: '#212121', label: 'Black' },
-  { value: '#FFFFFF', label: 'White' },
+  { value: "#232F3E", label: "AWS Blue" },
+  { value: "#FF9900", label: "AWS Orange" },
+  { value: "#1D8102", label: "AWS Green" },
+  { value: "#D13212", label: "AWS Red" },
+  { value: "#0073BB", label: "AWS Light Blue" },
+  { value: "#212121", label: "Black" },
+  { value: "#FFFFFF", label: "White" },
 ];
 
 const TEXT_COLORS = [
-  { value: '#FFFFFF', label: 'White' },
-  { value: '#232F3E', label: 'AWS Blue' },
-  { value: '#FF9900', label: 'AWS Orange' },
-  { value: '#212121', label: 'Black' },
+  { value: "#FFFFFF", label: "White" },
+  { value: "#232F3E", label: "AWS Blue" },
+  { value: "#FF9900", label: "AWS Orange" },
+  { value: "#212121", label: "Black" },
 ];
 
 export default function ImageEditor({
-  eventTitle = 'AWS 밋업: 클라우드 네이티브 애플리케이션 개발',
-  speakerName = '홍길동',
+  eventTitle = "AWS 밋업: 클라우드 네이티브 애플리케이션 개발",
+  speakerName = "홍길동",
   eventDate = new Date(),
   onClose,
 }: ImageEditorProps) {
@@ -91,70 +91,74 @@ export default function ImageEditor({
       }).then((canvas) => {
         canvas.toBlob((blob) => {
           if (blob !== null) {
-            saveAs(blob, 'result.png');
+            saveAs(blob, "result.png");
           }
         });
       });
       return canvas;
     } catch (error) {
-      console.error('Error converting div to image:', error);
+      console.error("Error converting div to image:", error);
     }
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   };
 
   const locationLabel =
-    LOCATIONS.find((loc) => loc.value === location).address || '';
+    LOCATIONS.find((loc) => loc.value === location).address || "";
 
   return (
-    <Card className="max-w-5xl mx-auto shadow-aws-card">
+    <Card className="mx-auto max-w-5xl shadow-aws-card">
       <CardHeader className="bg-secondary text-secondary-foreground">
         <CardTitle>커버 이미지 에디터</CardTitle>
-        <CardDescription className="text-secondary-foreground/80 pb-2">
+        <CardDescription className="pb-2 text-secondary-foreground/80">
           밋업 홍보용 이미지를 만들어보세요
         </CardDescription>
       </CardHeader>
 
       <CardContent className="p-1">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div>
-            <h3 className="text-lg font-semibold mb-4">미리보기</h3>
+            <h3 className="mb-4 text-lg font-semibold">미리보기</h3>
             <div
               ref={divRef}
-              className="aspect-video rounded-sm overflow-hidden relative mb-4"
-              style={{ backgroundColor: bgColor }}>
-              <div className="inset-0 p-5 flex flex-col justify-between h-full">
+              className="overflow-hidden relative mb-4 rounded-sm aspect-video"
+              style={{ backgroundColor: bgColor }}
+            >
+              <div className="flex inset-0 flex-col justify-between p-5 h-full">
                 <div className="space-y-1 md:space-y-2">
                   <div
                     className="text-md md:text-2xl font-bold break-words max-w-[90%] w-48 md:w-3xl"
-                    style={{ color: titleColor }}>
+                    style={{ color: titleColor }}
+                  >
                     {title}
                   </div>
                   <div
                     className="text-sm md:text-lg font-semibold break-words max-w-[90%] w-48 md:w-3xl"
-                    style={{ color: speakerColor }}>
+                    style={{ color: speakerColor }}
+                  >
                     {speaker}
                   </div>
                   <div
                     className="flex flex-col gap-1"
-                    style={{ color: speakerColor }}>
+                    style={{ color: speakerColor }}
+                  >
                     <time className="text-xs">{formatDate(eventDate)}</time>
-                    <div className="text-xs w-48 md:w-52">{locationLabel}</div>
+                    <div className="w-48 text-xs md:w-52">{locationLabel}</div>
                   </div>
                 </div>
                 <KrugMark />
                 <Profile
                   src="https://avatars.githubusercontent.com/u/102910?v=4"
-                  className="w-32 h-32 rounded-full absolute bottom-4 right-4 md:bottom-6 md:right-6"
+                  className="absolute right-4 bottom-4 w-32 h-32 rounded-full md:bottom-6 md:right-6"
                 />
               </div>
             </div>
@@ -169,23 +173,24 @@ export default function ImageEditor({
                   handleDownload();
                 }
               }}
-              className="w-full flex items-center justify-center gap-2">
+              className="flex gap-2 justify-center items-center w-full">
              
               이미지 다운로드
             </Button> */}
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold mb-4">편집하기</h3>
+            <h3 className="mb-4 text-lg font-semibold">편집하기</h3>
 
             <div className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="title">제목</Label>
                 <Input
                   id="title"
+                  type="text"
+                  className="p-2 w-full rounded-md border border-input bg-background"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="발표 제목을 입력하세요"
                 />
               </div>
 
@@ -201,9 +206,7 @@ export default function ImageEditor({
 
               <div className="grid gap-2">
                 <Label htmlFor="location">장소</Label>
-                <Select
-                  onValueChange={setLocation}
-                  value={location}>
+                <Select onValueChange={setLocation} value={location}>
                   <SelectTrigger id="location">
                     <SelectValue placeholder="장소를 선택하세요" />
                   </SelectTrigger>
@@ -212,7 +215,8 @@ export default function ImageEditor({
                       <SelectItem
                         className="text-xs"
                         key={loc.value}
-                        value={loc.value}>
+                        value={loc.value}
+                      >
                         {loc.address}
                       </SelectItem>
                     ))}
@@ -228,7 +232,7 @@ export default function ImageEditor({
                     type="color"
                     value={bgColor}
                     onChange={(e) => setBgColor(e.target.value)}
-                    className="w-16 h-10 p-0 rounded"
+                    className="p-0 w-16 h-10 rounded"
                   />
                 </div>
               </div>
@@ -244,28 +248,24 @@ export default function ImageEditor({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() => setTitleColor('#212121')} // 퀵 버튼 클릭 시 제목 색상만 변경
-                    className="w-6 h-6 rounded-full flex items-center justify-center border"
-                    style={{ backgroundColor: '#212121' }}
-                    title="Black">
-                    {titleColor === '#212121' && (
-                      <Check
-                        size={12}
-                        className="text-white drop-shadow-lg"
-                      />
+                    onClick={() => setTitleColor("#212121")} // 퀵 버튼 클릭 시 제목 색상만 변경
+                    className="flex justify-center items-center w-6 h-6 rounded-full border"
+                    style={{ backgroundColor: "#212121" }}
+                    title="Black"
+                  >
+                    {titleColor === "#212121" && (
+                      <Check size={12} className="text-white drop-shadow-lg" />
                     )}
                   </button>
 
                   <button
-                    onClick={() => setTitleColor('#FFFFFF')} // 퀵 버튼 클릭 시 제목 색상만 변경
-                    className="w-6 h-6 rounded-full flex items-center justify-center border"
-                    style={{ backgroundColor: '#FFFFFF' }}
-                    title="White">
-                    {titleColor === '#FFFFFF' && (
-                      <Check
-                        size={12}
-                        className="text-black drop-shadow-lg"
-                      />
+                    onClick={() => setTitleColor("#FFFFFF")} // 퀵 버튼 클릭 시 제목 색상만 변경
+                    className="flex justify-center items-center w-6 h-6 rounded-full border"
+                    style={{ backgroundColor: "#FFFFFF" }}
+                    title="White"
+                  >
+                    {titleColor === "#FFFFFF" && (
+                      <Check size={12} className="text-black drop-shadow-lg" />
                     )}
                   </button>
                 </div>
@@ -279,7 +279,7 @@ export default function ImageEditor({
                     setPickerColor(e.target.value);
                     setTitleColor(e.target.value);
                   }}
-                  className="w-16 h-10 p-0 rounded"
+                  className="p-0 w-16 h-10 rounded"
                   title="Custom Color Picker"
                 />
               </div>
@@ -292,29 +292,25 @@ export default function ImageEditor({
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setSpeakerColor('#FFFFFF')}
-                    className="w-6 h-6 rounded-full flex items-center justify-center border"
-                    style={{ backgroundColor: '#FFFFFF' }}
-                    title="White">
-                    {speakerColor === '#FFFFFF' && (
-                      <Check
-                        size={14}
-                        className="text-black drop-shadow-lg"
-                      />
+                    onClick={() => setSpeakerColor("#FFFFFF")}
+                    className="flex justify-center items-center w-6 h-6 rounded-full border"
+                    style={{ backgroundColor: "#FFFFFF" }}
+                    title="White"
+                  >
+                    {speakerColor === "#FFFFFF" && (
+                      <Check size={14} className="text-black drop-shadow-lg" />
                     )}
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => setSpeakerColor('#212121')} // 퀵 버튼 클릭 시 텍스트 색상만 변경
-                    className="w-6 h-6 rounded-full flex items-center justify-center border"
-                    style={{ backgroundColor: '#212121' }}
-                    title="Black">
-                    {speakerColor === '#212121' && (
-                      <Check
-                        size={14}
-                        className="text-white drop-shadow-lg"
-                      />
+                    onClick={() => setSpeakerColor("#212121")} // 퀵 버튼 클릭 시 텍스트 색상만 변경
+                    className="flex justify-center items-center w-6 h-6 rounded-full border"
+                    style={{ backgroundColor: "#212121" }}
+                    title="Black"
+                  >
+                    {speakerColor === "#212121" && (
+                      <Check size={14} className="text-white drop-shadow-lg" />
                     )}
                   </button>
                 </div>
@@ -329,7 +325,7 @@ export default function ImageEditor({
                     setSpeakerColorPicker(e.target.value);
                     setSpeakerColor(e.target.value);
                   }}
-                  className="w-16 h-10 p-0 rounded"
+                  className="p-0 w-16 h-10 rounded"
                   title="Custom Color Picker"
                 />
               </div>
@@ -338,16 +334,11 @@ export default function ImageEditor({
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-end border-t p-4 gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onClose}>
+      <CardFooter className="flex gap-2 justify-end p-4 border-t">
+        <Button type="button" variant="outline" onClick={onClose}>
           취소
         </Button>
-        <Button
-          type="button"
-          onClick={handleDownload}>
+        <Button type="button" onClick={handleDownload}>
           <Download size={18} />
           저장 및 다운로드
         </Button>

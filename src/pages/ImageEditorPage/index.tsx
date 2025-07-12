@@ -1,26 +1,20 @@
-// import React, { useState } from "react";
-import ImageEditor from '@/components/ImageEditor';
+import ImageEditor from "../../components/ImageEditor";
 
 export function ImageEditorPage() {
-  const handleClose = () => {
-    // In a real app, this would navigate back to the previous page
-    console.log('Editor closed');
-  };
-
-  // Sample data - in a real app, this would come from props or a data store
-  const eventData = {
-    eventTitle: 'AWS 밋업: 서버리스 아키텍처와 마이크로서비스',
-    speakerName: '김철수 (테크놀로지)',
-    eventDate: new Date(2025, 3, 15),
-  };
-
   return (
-    <div className="container mx-auto p-4">
+    <div className="mx-auto max-w-4xl">
+      <header className="mb-8">
+        <h1 className="mb-2 text-3xl font-bold">Image Editor</h1>
+        <p className="text-muted-foreground">
+          Create and customize cover images for your AWS meetup presentations.
+        </p>
+      </header>
+
       <ImageEditor
-        eventTitle={eventData.eventTitle}
-        speakerName={eventData.speakerName}
-        eventDate={eventData.eventDate}
-        onClose={handleClose}
+        eventTitle="AWS 밋업: 클라우드 네이티브 애플리케이션 개발"
+        speakerName="홍길동"
+        eventDate={new Date()}
+        onClose={() => {}}
       />
     </div>
   );

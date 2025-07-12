@@ -1,14 +1,17 @@
-// src/pages/Routes.tsx
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { ROUTE_PATH } from "../constants/route";
 import { ErrorPage } from "./ErrorPage";
 import { HomePage } from "./HomePage";
 import { ImageEditorPage } from "./ImageEditorPage";
-import ManagementPage from "./ManagementPage";
-import { PresentFormPage } from "./PresentFormPage";
+import { ManagementPage } from "./ManagementPage";
 import { PageLayout } from "./PageLayout";
+import { PresentFormPage } from "./PresentFormPage";
 
 const router = createBrowserRouter([
+  {
+    path: "*",
+    element: <ErrorPage />,
+  },
   {
     path: "/",
     element: (
